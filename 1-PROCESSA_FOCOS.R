@@ -1,0 +1,51 @@
+library(sf)
+library(tidyverse)
+
+folder_path <- "C:/Users/luktr/Desktop/lucas/r/mird/base"
+### Set working directory (defina)
+setwd(folder_path)
+
+# Prepare to Extract Fire Data
+
+# List of folders
+folders <- list.files(path = "./shp",pattern = "focos_qmd_inpe_"); folders
+
+# Loop through each folder and read the shapefile
+shapefiles <- list()  # Empty list to store shapefiles
+
+for (folder in folders) {
+  # Get the full path to the shapefile (assuming only one .shp per folder)
+  shp_path <- list.files(paste0("./shp/",folder), pattern = "\\.shp$", full.names = TRUE)
+  
+  if (length(shp_path) > 0) {  # Ensure there is a .shp file in the folder
+    shp_data <- st_read(shp_path[1])  # Read the first shapefile found
+    shapefiles[[folder]] <- shp_data  # Store in the list
+    print(paste("Loaded:", shp_path[1]))
+  } else {
+    print(paste("No shapefile found in:", folder))
+  }
+}
+
+# Check loaded shapefiles
+print(shapefiles)
+# Merge them
+# Focos ano anterior
+#f_y <- shapefiles[[1]]
+# Focos dois anos acumulados
+#f_y2 <- st_union(shapefiles[[1]],shapefiles[[2]])
+# Focos quatro anos acumulados
+#f_y2 <- st_union(shapefiles[[1]],shapefiles[[2]])
+
+merged_shp <- do.call(rbind, shapefiles)  # For sf
+
+# Separate into Date and Hour columns
+merged_shp1 <- merged_shp %>%
+  separate(DataHora, into = c("Date", "Hour"), sep = " ") %>%
+  separate(Date, into = c("Year", "Month", "Day"), sep = "/")
+
+merged_shp1$Year  <- as.numeric(merged_shp1$Year)
+merged_shp1$Month <- as.numeric(merged_shp1$Month)
+merged_shp1$Day   <- as.numeric(merged_shp1$Day)
+
+
+st_write(merged_shp1, "shp/focos_2016_2024.shp", delete_dsn = TRUE)
