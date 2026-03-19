@@ -337,7 +337,7 @@ def_prep <- function(folder,ano_inicial, ano_final,mes_inicial,mes_final) {
 # Essa funcao roda o modelo de priorização
 def_prio <- function(folder,ano_inicial, ano_final,mes_inicial,mes_final) {
   
-  setwd(folder)
+  #setwd(folder)
   
   # Vector of required packages
   pkgs <- c(
@@ -357,16 +357,16 @@ def_prio <- function(folder,ano_inicial, ano_final,mes_inicial,mes_final) {
   sf::sf_use_s2(FALSE)  # Disable S2 engine globally for sf
   
   # Cria pasta necessária
-  if (!dir.exists(file.path(folder, "tabelas"))) {
-    dir.create(file.path(folder, "tabelas"))
-  }
+  # if (!dir.exists(file.path(folder, "tabelas"))) {
+  #   dir.create(file.path(folder, "tabelas"))
+  # }
   
   # Cria pasta necessária
   if (!dir.exists(file.path(folder, "outputs"))) {
     dir.create(file.path(folder, "outputs"))
   }
   
-  pt_infra_f <- read.csv("tabelas/infra_pa.csv") %>% dplyr::select(-X) %>%
+  pt_infra_f <- read.csv(paste0(folder,"/tabelas/infra_pa.csv")) %>% dplyr::select(-X) %>%
     rename( area_PA = PA_area, dist_road = dist_rod, dist_hidro = dist_hid, dist_hidro_road = dist_hidro_rod)
   
   # IMPORTANTE SEMPRE CASAR O LOADING AQUI COM O SAVE DA AGREGAÇÃO DE DADOS NA MASCARA LINHA 150
@@ -521,11 +521,11 @@ def_viz <- function(folder,mes_inicial,mes_final) {
   
   sf::sf_use_s2(FALSE)  # Disable S2 engine globally for sf
   
-  folder <- "C:/Users/luktr/Desktop/lucas/r/mird"
+  #folder <- "C:/Users/luktr/Desktop/lucas/r/mird"
   
   # Compara desmatamento PRODES
   #pr <- raster(file.path(folder,"base/shp"))  # Deforestation (PRODES)
-  deter <- st_read(file.path(folder,"base/shp/deter-amz-deter-public.shp")) # Deforestation (DETER) 
+  deter <- st_read(paste0(folder,"/deter-amz-deter-public.shp")) # Deforestation (DETER) 
   pf <- read.csv(paste0(folder,"/tabelas/perc_floresta_por_grid.csv")); pf <- rename(pf, id = OBJECTID)
   
   result <- data.frame() # Data frame do % deter em classes de priorizacao
@@ -533,9 +533,9 @@ def_viz <- function(folder,mes_inicial,mes_final) {
   for (i in mes_inicial:mes_final) { # Mes
     
     # Resultado da priorização
-    q <- st_read(paste0(folder,"/base/shp/Grade_Random_Forest.shp"))  # Quadriculate
+    q <- st_read(paste0(folder,"/Grade_Random_Forest.shp"))  # Quadriculate
     prio <- st_read(paste0(folder,"/outputs/v",i,"/priorizacao.gpkg")) %>% st_transform(st_crs(q))
-    no_forest <- st_read(file.path(folder,"base/shp/no_forest.shp")) %>% st_transform(st_crs(q))
+    no_forest <- st_read(paste0(folder,"/no_forest.shp")) %>% st_transform(st_crs(q))
     
     
     q$intersects <- as.integer(lengths(st_intersects(q, no_forest)) > 0)
@@ -841,7 +841,7 @@ def_viz <- function(folder,mes_inicial,mes_final) {
 #folder <- "C:/Users/luktr/Desktop/lucas/r/mird"
 
 # Chame a funcao que queira rodar aqui:
-def_prep(folder = here(root1), ano_inicial = 2022, ano_final = 2022, mes_inicial = 1, mes_final = 1)
+def_prep(folder = here(root1), ano_inicial = 2018, ano_final = 2022, mes_inicial = 1, mes_final = 12)
 def_prio(folder = here(root1), ano_inicial = 2018, ano_final = 2022,mes_inicial = 1, mes_final = 12)
 def_viz(folder = here(root1), mes_inicial = 1, mes_final = 12)
 
