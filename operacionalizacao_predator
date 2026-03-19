@@ -61,7 +61,7 @@ shp_files <- files[grepl(shp_ext, files$name, ignore.case = TRUE), ]
 # --------------------------------
 print(here())
 
-root1 = "deter_data/base/shp"
+root1 = "Downloads/deter_data/base/shp"
 
 dir.create(here(root1), recursive = TRUE, showWarnings = FALSE)
 # --------------------------------
