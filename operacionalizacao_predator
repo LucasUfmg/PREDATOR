@@ -74,7 +74,7 @@ for(i in seq_len(nrow(shp_files))){
   
   drive_download(
     file = dplyr::slice(shp_files, i),
-    path = file.path(here(root1),shp_files$name[i]),
+    path = paste0(here(),"/",root1,'/',shp_files$name[i]),
     overwrite = TRUE
   )
 }
@@ -130,7 +130,7 @@ def_prep <- function(folder,ano_inicial, ano_final,mes_inicial,mes_final) {
   
   
   # Carrega deter, malha de pontos, focos e a grade de 25 km
-  deter <- st_read("deter-amz-deter-public.shp") # Deforestation (DETER) 
+  deter <- st_read(paste0(folder,"/deter-amz-deter-public.shp")) # Deforestation (DETER) 
   
   
   # nf <- no_forest %>% st_transform(st_crs(deter)) %>% rename(PATH_ROW = path_row)
@@ -139,15 +139,15 @@ def_prep <- function(folder,ano_inicial, ano_final,mes_inicial,mes_final) {
   # 
   # deter <- deter[lengths(idx) == 0, ]
   
-  p <- st_read("Pontos.shp")  # Points
-  q <- st_read("Grade_Random_Forest.shp")  # Quadriculate
+  p <- st_read(paste0(folder,"/Pontos.shp"))  # Points
+  q <- st_read(paste0(folder,"/Grade_Random_Forest.shp"))  # Quadriculate
   #no_forest <- st_read("base/shp/no_forest.shp") %>% st_transform(st_crs(q))
   
   #q$intersects <- as.integer(lengths(st_intersects(q, no_forest)) > 0)
   #q_inter <- q[q$intersects == 1, ] # Seleciona apenas nao floresta
   #q_clean <- st_difference(q, st_union(q_inter)) # Remove areas de nao floresta
   
-  df_focos <- read_sf("focos_2016_2024.shp")
+  df_focos <- read_sf(paste0(folder,"/focos_2016_2024.shp"))
   
   # Faz transformações necessárias
   qt <- st_transform(q, crs(deter)); #incluir q clean
@@ -331,7 +331,7 @@ def_prep <- function(folder,ano_inicial, ano_final,mes_inicial,mes_final) {
     year_list <- rbind(Month_list,year_list)
   }
   
-  write.csv(year_list, paste0("tabelas/df_operacionalizado_",ano_inicial,"_",ano_final,".csv"))
+  write.csv(year_list, paste0(folder,"/tabelas/df_operacionalizado_",ano_inicial,"_",ano_final,".csv"))
   
 }
 # Essa funcao roda o modelo de priorização
@@ -841,7 +841,7 @@ def_viz <- function(folder,mes_inicial,mes_final) {
 #folder <- "C:/Users/luktr/Desktop/lucas/r/mird"
 
 # Chame a funcao que queira rodar aqui:
-def_prep(folder = root1, ano_inicial = 2022, ano_final = 2022, mes_inicial = 1, mes_final = 1)
-def_prio(folder = here("deter_data/base/shp"), ano_inicial = 2018, ano_final = 2022,mes_inicial = 1, mes_final = 12)
-def_viz(folder = here("deter_data/base/shp"), mes_inicial = 1, mes_final = 12)
+def_prep(folder = here(root1), ano_inicial = 2022, ano_final = 2022, mes_inicial = 1, mes_final = 1)
+def_prio(folder = here(root1), ano_inicial = 2018, ano_final = 2022,mes_inicial = 1, mes_final = 12)
+def_viz(folder = here(root1), mes_inicial = 1, mes_final = 12)
 
